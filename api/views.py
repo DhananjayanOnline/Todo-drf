@@ -10,6 +10,8 @@ from rest_framework.decorators import action
 
 # Create your views here.
 
+
+
 class TodoView(ViewSet):
     def list(self, request, *args, **kwargs):
         qs = Todo.objects.all()
@@ -45,15 +47,18 @@ class TodoView(ViewSet):
         else:
             return Response(data=serializer.errors)
 
-
+from .custompermission import IsOwnerPermission
 
 class TodosModelViews(ModelViewSet):
 
     authentication_classes=[authentication.BasicAuthentication]
-    permission_classes=[permissions.IsAuthenticated]
+    permission_classes=[IsOwnerPermission]
 
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
+
+    def perform_destroy(self, instance):
+        return super().perform_destroy(instance)
 
     # def list(self, request, *args, **kwargs):
     #     user=request.user
