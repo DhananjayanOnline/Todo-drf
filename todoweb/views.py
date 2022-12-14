@@ -1,16 +1,17 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, TemplateView
-from todoweb.forms import UserRegistrationForm, UserLoginForm
+from todoweb.forms import UserRegistrationForm, UserLoginForm, TodoForm
 from django.contrib.auth.models import User
 from api.models import Todo
 from django.contrib.auth import authenticate, login
 
 # Create your views here.
 
+
 class RegisterView(View):
     def get(self, request, *args, **kwargs):
         form = UserRegistrationForm()
-        return render(request, "register.html", {"form":form})
+        return render(request, "register.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = UserRegistrationForm(request.POST)
@@ -18,12 +19,13 @@ class RegisterView(View):
             User.objects.create_user(**form.cleaned_data)
             return redirect("register")
         else:
-            return render(request, "register.html", {"form":form})
+            return render(request, "register.html", {"form": form})
+
 
 class LoginView(View):
     def get(self, request, *args, **kwargs):
         form = UserLoginForm()
-        return render(request, "login.html", {"form":form})
+        return render(request, "login.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = UserLoginForm(request.POST)
@@ -38,6 +40,7 @@ class LoginView(View):
                 print('invalid user')
                 return redirect('signin')
 
+
 class IndexView(TemplateView):
     # def get(self, request, *args, **kwargs):
     #     return render(request, 'index.html')
@@ -47,4 +50,19 @@ class IndexView(TemplateView):
 class TodoListView(View):
     def get(self, request, *args, **kwargs):
         user_todos = Todo.objects.filter(user=request.user)
-        return render(request, 'todo-list.html', {"todos":user_todos})
+        return render(request, 'todo-list.html', {"todos": user_todos})
+
+class TodoCreateView(View):
+    def get(self, request, *args, **kwargs):
+        form = TodoForm()
+        return render(request, 'todo-create.html', {"form":form})
+
+    def post(self, request, *args, **kwargs):
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
+            return redirect("todo-list")
+        else:
+            return render(request, 'todo-create.html', {'form':form})

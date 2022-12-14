@@ -6,4 +6,5 @@ urlpatterns=[
     path("login", views.LoginView.as_view(), name="signin"),
     path("home", views.IndexView.as_view(), name='home'),
     path("todos/all", views.TodoListView.as_view(), name='todo-list'),
+    path("todos/add", views.TodoCreateView.as_view(), name='todo-add'),
 ]   
