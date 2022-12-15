@@ -18,12 +18,17 @@
                             <th class="display-6">Task</th>
                             <th class="display-6">Status</th>
                             <th class="display-6">Date</th>
+                            <th class="display-6">Action</th>
                         </tr>
                         {% for todo in todos %}
                         <tr>
                             <td>{{todo.task_name}}</td>
                             <td>{{todo.status}}</td>
                             <td>{{todo.created_date}}</td>
+                            <td>
+                                <a href="{% url 'todo-detail' todo.id %}" class="btn btn-outline-warning btn-sm " style="border-radius: 0;">View</a>
+                                <a href="{% url 'todo-delete' todo.id %}" class="btn btn-outline-danger btn-sm" style="border-radius: 0;">Delete</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </table>

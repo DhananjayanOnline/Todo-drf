@@ -66,3 +66,14 @@ class TodoCreateView(View):
             return redirect("todo-list")
         else:
             return render(request, 'todo-create.html', {'form':form})
+
+class TodoDetailsView(View):
+    def get(self, request, *args, **kwargs):
+        id = kwargs.get('id')
+        qs = Todo.objects.get(id=id)
+        return render(request, 'todo-detail.html', {'todo':qs})
+
+def todo_delete_view(request, *args, **kwargs):
+        id = kwargs.get('id')
+        Todo.objects.get(id=id).delete()
+        return redirect('todo-list')
