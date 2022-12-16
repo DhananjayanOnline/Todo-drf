@@ -16,6 +16,10 @@
                 <form action="" method="post">
                     {% csrf_token %}
                     {{form.as_p}}
+                    
+                    {% for message in messages %}
+                    {{message}}
+                    {% endfor %}
                     <button type="submit" class="btn btn-outline-info btn mt-1" style="width: 100%;">Login</button>
                 </form>
             </div>

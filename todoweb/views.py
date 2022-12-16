@@ -5,12 +5,14 @@ from django.contrib.auth.models import User
 from api.models import Todo
 from django.contrib.auth import authenticate, login, logout
 from django.utils.decorators import method_decorator
+from django.contrib import messages
 
 # Create your views here.
 
 def signin_required(fn):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
+            messages.error(request, "You must have login first")
             return redirect('signin')
         else:
             return fn(request, *args, **kwargs)
@@ -89,13 +91,14 @@ class TodoDetailsView(View):
         return render(request, 'todo-detail.html', {'todo':qs})
 
 
-@method_decorator(signin_required, name="dispatch")
+@signin_required
 def todo_delete_view(request, *args, **kwargs):
         id = kwargs.get('id')
         Todo.objects.get(id=id).delete()
         return redirect('todo-list')
 
 
+@signin_required
 def signout_view(request, *args, **kwargs):
     logout(request)
     return redirect("signin")
