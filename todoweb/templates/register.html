@@ -18,6 +18,27 @@
                     {% csrf_token %}
 
                     {{form.as_p}}
+
+                    <div class="messages">
+                        {% for message in messages %}
+
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>{{message}}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <strong>{{message}}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endif %}
+                        
+                        {% endfor %}
+                    </div>
+                    
                     <button type="submit" class="btn btn-outline-info">Submit</button>
                 </form>
             </div>

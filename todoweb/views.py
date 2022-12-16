@@ -28,8 +28,12 @@ class RegisterView(View):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             User.objects.create_user(**form.cleaned_data)
-            return redirect("register")
+
+            messages.success(request, "Account has been created")
+            return redirect("signin")
         else:
+            
+            messages.error(request, "Sign-up information is not valid")
             return render(request, "register.html", {"form": form})
 
 
@@ -48,7 +52,8 @@ class LoginView(View):
                 login(request, user)
                 return redirect('home')
             else:
-                print('invalid user')
+                
+                messages.error(request, "login credentionals are not matching")   
                 return redirect('signin')
 
 
@@ -78,8 +83,12 @@ class TodoCreateView(View):
             instance = form.save(commit=False)
             instance.user = request.user
             instance.save()
+            
+            messages.success(request, "Todo created")
             return redirect("todo-list")
         else:
+            
+            messages.error(request, "Todo is not created")
             return render(request, 'todo-create.html', {'form':form})
 
 
@@ -95,6 +104,8 @@ class TodoDetailsView(View):
 def todo_delete_view(request, *args, **kwargs):
         id = kwargs.get('id')
         Todo.objects.get(id=id).delete()
+        
+        messages.success(request, "Todo deleted")
         return redirect('todo-list')
 
 
