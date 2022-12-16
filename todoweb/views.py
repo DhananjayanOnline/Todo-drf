@@ -3,7 +3,7 @@ from django.views.generic import View, TemplateView
 from todoweb.forms import UserRegistrationForm, UserLoginForm, TodoForm
 from django.contrib.auth.models import User
 from api.models import Todo
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.utils.decorators import method_decorator
 
 # Create your views here.
@@ -94,3 +94,8 @@ def todo_delete_view(request, *args, **kwargs):
         id = kwargs.get('id')
         Todo.objects.get(id=id).delete()
         return redirect('todo-list')
+
+
+def signout_view(request, *args, **kwargs):
+    logout(request)
+    return redirect("signin")

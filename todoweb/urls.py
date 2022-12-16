@@ -9,4 +9,5 @@ urlpatterns=[
     path("todos/add", views.TodoCreateView.as_view(), name='todo-add'),
     path("todos/<int:id>", views.TodoDetailsView.as_view(), name='todo-detail'),
     path("todos/remove/<int:id>", views.todo_delete_view, name='todo-delete'),
+    path("sign-out", views.signout_view, name='sign-out'),
 ]   
