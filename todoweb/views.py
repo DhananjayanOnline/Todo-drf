@@ -4,8 +4,17 @@ from todoweb.forms import UserRegistrationForm, UserLoginForm, TodoForm
 from django.contrib.auth.models import User
 from api.models import Todo
 from django.contrib.auth import authenticate, login
+from django.utils.decorators import method_decorator
 
 # Create your views here.
+
+def signin_required(fn):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('signin')
+        else:
+            return fn(request, *args, **kwargs)
+    return wrapper
 
 
 class RegisterView(View):
@@ -41,17 +50,21 @@ class LoginView(View):
                 return redirect('signin')
 
 
+@method_decorator(signin_required, name="dispatch")
 class IndexView(TemplateView):
     # def get(self, request, *args, **kwargs):
     #     return render(request, 'index.html')
     template_name = 'index.html'
 
 
+@method_decorator(signin_required, name="dispatch")
 class TodoListView(View):
     def get(self, request, *args, **kwargs):
         user_todos = Todo.objects.filter(user=request.user)
         return render(request, 'todo-list.html', {"todos": user_todos})
 
+
+@method_decorator(signin_required, name="dispatch")
 class TodoCreateView(View):
     def get(self, request, *args, **kwargs):
         form = TodoForm()
@@ -67,12 +80,16 @@ class TodoCreateView(View):
         else:
             return render(request, 'todo-create.html', {'form':form})
 
+
+@method_decorator(signin_required, name="dispatch")
 class TodoDetailsView(View):
     def get(self, request, *args, **kwargs):
         id = kwargs.get('id')
         qs = Todo.objects.get(id=id)
         return render(request, 'todo-detail.html', {'todo':qs})
 
+
+@method_decorator(signin_required, name="dispatch")
 def todo_delete_view(request, *args, **kwargs):
         id = kwargs.get('id')
         Todo.objects.get(id=id).delete()
