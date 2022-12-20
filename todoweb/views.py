@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import View, TemplateView
 from todoweb.forms import UserRegistrationForm, UserLoginForm, TodoForm
-from django.views.generic import CreateView, FormView, ListView
+from django.views.generic import CreateView, FormView, ListView, DetailView
 from django.contrib.auth.models import User
 from api.models import Todo
 from django.contrib.auth import authenticate, login, logout
@@ -83,7 +83,7 @@ class TodoListView(ListView):
 
     def get_queryset(self):
         return Todo.objects.filter(user=self.request.user)
-        
+
     # def get(self, request, *args, **kwargs):
     #     user_todos = Todo.objects.filter(user=request.user)
     #     return render(request, 'todo-list.html', {"todos": user_todos})
@@ -93,8 +93,13 @@ class TodoListView(ListView):
 class TodoCreateView(CreateView):
     template_name = 'todo-create.html'
     form_class = TodoForm
-    model = Todo
+    model = Todo 
     success_url = reverse_lazy('todo-list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        messages.success(self.request, "todo created")
+        return super().form_valid(form)
 
     # def get(self, request, *args, **kwargs):
     #     form = TodoForm()
@@ -116,11 +121,15 @@ class TodoCreateView(CreateView):
 
 
 @method_decorator(signin_required, name="dispatch")
-class TodoDetailsView(View):
-    def get(self, request, *args, **kwargs):
-        id = kwargs.get('id')
-        qs = Todo.objects.get(id=id)
-        return render(request, 'todo-detail.html', {'todo':qs})
+class TodoDetailsView(DetailView):
+    template_name = 'todo-detail.html'
+    model = Todo
+    context_object_name = 'todo'
+    pk_url_kwarg = 'id'
+    # def get(self, request, *args, **kwargs):
+    #     id = kwargs.get('id')
+    #     qs = Todo.objects.get(id=id)
+    #     return render(request, 'todo-detail.html', {'todo':qs})
 
 
 @signin_required
